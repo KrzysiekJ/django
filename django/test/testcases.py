@@ -17,6 +17,7 @@ try:
     from urllib.parse import urlsplit, urlunsplit
 except ImportError:     # Python 2
     from urlparse import urlsplit, urlunsplit
+import warnings
 
 from django.conf import settings
 from django.contrib.staticfiles.handlers import StaticFilesHandler
@@ -203,6 +204,9 @@ class SimpleTestCase(unittest.TestCase):
     def _urlconf_setup(self):
         set_urlconf(None)
         if hasattr(self, 'urls'):
+            warnings.warn(
+                "SimpleTestCase.urls attribute is deprecated, override ROOT_URLCONF with override_settings instead.",
+                PendingDeprecationWarning)
             self._old_root_urlconf = settings.ROOT_URLCONF
             settings.ROOT_URLCONF = self.urls
             clear_url_caches()
@@ -225,6 +229,8 @@ class SimpleTestCase(unittest.TestCase):
         A context manager that temporarily sets a setting and reverts
         back to the original value when exiting the context.
         """
+        warnings.warn("SimpleTestCase.settings is deprecated, use override_settings instead.",
+                      PendingDeprecationWarning)
         return override_settings(**kwargs)
 
     def assertRedirects(self, response, expected_url, status_code=302,
